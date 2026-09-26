@@ -58,6 +58,10 @@
 			"type": "boolean",
 			"description": "Create .nojekyll in repository root if missing to prevent Jekyll processing",
 			"default": false
+		},
+		"ssh": {
+			"type": "boolean",
+			"description": "Use SSH instead of HTTPS for Git operations"
 		}
 	},
 	"additionalProperties": false

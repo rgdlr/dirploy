@@ -55,6 +55,8 @@ Options:
   --exclude <patterns>       Comma-separated patterns to exclude from deployment
   --no-clean                 Do not remove existing files in destination directory
   --nojekyll                 Create .nojekyll at repository root if missing
+  --ssh                      Use SSH protocol (git@github.com) for Git operations
+  --no-ssh                   Use HTTPS protocol instead of SSH
   --dry-run                  Calculate and display deployment without modifying destination
   --force                    Allow potentially destructive operations explicitly
   -h, --help                 display help for command`
@@ -79,6 +81,8 @@ export async function runCli(argv: string[] = process.argv): Promise<number> {
 		'no-clean'?: boolean
 		exclude?: string
 		nojekyll?: boolean
+		ssh?: boolean
+		'no-ssh'?: boolean
 		'dry-run'?: boolean
 		force?: boolean
 		help?: boolean
@@ -101,6 +105,8 @@ export async function runCli(argv: string[] = process.argv): Promise<number> {
 				'no-clean': { type: 'boolean' },
 				exclude: { type: 'string' },
 				nojekyll: { type: 'boolean' },
+				ssh: { type: 'boolean' },
+				'no-ssh': { type: 'boolean' },
 				'dry-run': { type: 'boolean' },
 				force: { type: 'boolean' },
 				help: { type: 'boolean', short: 'h' },
@@ -195,6 +201,15 @@ export async function runCli(argv: string[] = process.argv): Promise<number> {
 
 		const nojekyll = values.nojekyll ?? config?.nojekyll ?? false
 
+		let ssh: boolean | undefined
+		if (values['no-ssh']) {
+			ssh = false
+		} else if (values.ssh !== undefined) {
+			ssh = Boolean(values.ssh)
+		} else if (config?.ssh !== undefined) {
+			ssh = config.ssh
+		}
+
 		if (!values['dry-run']) {
 			printHeader()
 			printDeploymentDetails(source, repository, branch, destinationPath)
@@ -211,6 +226,7 @@ export async function runCli(argv: string[] = process.argv): Promise<number> {
 			clean,
 			exclude,
 			nojekyll,
+			ssh,
 			dryRun: Boolean(values['dry-run']),
 			onWarning: (warning) => {
 				printWarning(warning)

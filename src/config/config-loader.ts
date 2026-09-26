@@ -15,6 +15,7 @@ export interface DirployConfig {
 	exclude?: string[]
 	clean?: boolean
 	nojekyll?: boolean
+	ssh?: boolean
 }
 
 export type PublisherConfig = DirployConfig

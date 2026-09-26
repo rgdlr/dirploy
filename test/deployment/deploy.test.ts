@@ -4,7 +4,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { promisify } from 'node:util'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { deploy } from '../../src/deployment/deploy.js'
+import { deploy, resolveCloneUrl } from '../../src/deployment/deploy.js'
 import type { GitClient } from '../../src/git/git-client.js'
 
 const execFileAsync = promisify(execFile)
@@ -198,5 +198,58 @@ describe('git end-to-end integration test with local repositories', () => {
 		})
 
 		expect(secondResult.changed).toBe(false)
+	})
+
+	describe('resolveCloneUrl', () => {
+		const originalEnv = { ...process.env }
+
+		afterEach(() => {
+			process.env = { ...originalEnv }
+		})
+
+		it('preserves local paths and file URLs', () => {
+			expect(resolveCloneUrl('/tmp/local-repo')).toBe('/tmp/local-repo')
+			expect(resolveCloneUrl('./local-repo')).toBe('./local-repo')
+			expect(resolveCloneUrl('file:///path/to/repo')).toBe('file:///path/to/repo')
+		})
+
+		it('preserves explicit SSH URLs', () => {
+			expect(resolveCloneUrl('git@github.com:user/site.git')).toBe('git@github.com:user/site.git')
+			expect(resolveCloneUrl('ssh://git@github.com/user/site.git')).toBe(
+				'ssh://git@github.com/user/site.git',
+			)
+		})
+
+		it('injects token when auth token is present', () => {
+			process.env.DIRPLOY_TOKEN = 'secret-token'
+			expect(resolveCloneUrl('user/site')).toBe(
+				'https://x-access-token:secret-token@github.com/user/site.git',
+			)
+			expect(resolveCloneUrl('https://github.com/user/site.git')).toBe(
+				'https://x-access-token:secret-token@github.com/user/site.git',
+			)
+		})
+
+		it('forces SSH when ssh option is true', () => {
+			delete process.env.DIRPLOY_TOKEN
+			delete process.env.GITHUB_TOKEN
+			expect(resolveCloneUrl('user/site', null, { ssh: true })).toBe('git@github.com:user/site.git')
+		})
+
+		it('forces HTTPS when ssh option is false', () => {
+			delete process.env.DIRPLOY_TOKEN
+			delete process.env.GITHUB_TOKEN
+			expect(resolveCloneUrl('user/site', 'git@github.com:user/source.git', { ssh: false })).toBe(
+				'https://github.com/user/site.git',
+			)
+		})
+
+		it('infers SSH from git@ currentRemoteUrl', () => {
+			delete process.env.DIRPLOY_TOKEN
+			delete process.env.GITHUB_TOKEN
+			expect(resolveCloneUrl('user/site', 'git@github.com:user/source.git')).toBe(
+				'git@github.com:user/site.git',
+			)
+		})
 	})
 })

@@ -1,4 +1,5 @@
-import { promises as fs } from 'node:fs'
+import { existsSync, promises as fs, readdirSync } from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import {
 	assertSafeDestinationInsideRepository,
@@ -28,6 +29,7 @@ export interface DeploymentOptions {
 	clean?: boolean
 	exclude?: string[]
 	nojekyll?: boolean
+	ssh?: boolean
 	maxRetries?: number
 	gitClient?: GitClient
 	synchronizer?: DirectorySynchronizer
@@ -65,7 +67,27 @@ export interface DeploymentPlan {
 	nojekyll: boolean
 }
 
-export function resolveCloneUrl(repository: string, currentRemoteUrl?: string | null): string {
+function hasLocalSshConfig(): boolean {
+	if (process.env.SSH_AUTH_SOCK) {
+		return true
+	}
+	try {
+		const sshDir = path.join(os.homedir(), '.ssh')
+		if (!existsSync(sshDir)) {
+			return false
+		}
+		const entries = readdirSync(sshDir)
+		return entries.some((file) => file.startsWith('id_') || file === 'config')
+	} catch {
+		return false
+	}
+}
+
+export function resolveCloneUrl(
+	repository: string,
+	currentRemoteUrl?: string | null,
+	options?: { ssh?: boolean },
+): string {
 	const trimmed = repository.trim()
 
 	const isLocalOrFileProtocol =
@@ -93,11 +115,26 @@ export function resolveCloneUrl(repository: string, currentRemoteUrl?: string | 
 		return trimmed
 	}
 
+	if (options?.ssh === true) {
+		return `git@github.com:${trimmed}.git`
+	}
+
+	if (options?.ssh === false) {
+		if (authToken) {
+			return `https://x-access-token:${authToken}@github.com/${trimmed}.git`
+		}
+		return `https://github.com/${trimmed}.git`
+	}
+
 	if (authToken) {
 		return `https://x-access-token:${authToken}@github.com/${trimmed}.git`
 	}
 
 	if (currentRemoteUrl?.startsWith('git@github.com:')) {
+		return `git@github.com:${trimmed}.git`
+	}
+
+	if (!currentRemoteUrl && hasLocalSshConfig()) {
 		return `git@github.com:${trimmed}.git`
 	}
 
@@ -127,7 +164,7 @@ export async function createDeploymentPlan(
 	const dryRun = Boolean(options.dryRun)
 	const customDomain = options.domain || options.cname
 	const siteUrl = buildSiteUrl(owner, normalizedPath, customDomain)
-	const cloneUrl = resolveCloneUrl(options.repository, currentRemoteUrl)
+	const cloneUrl = resolveCloneUrl(options.repository, currentRemoteUrl, { ssh: options.ssh })
 
 	let referenceRepo = options.localRepo ? path.resolve(options.localRepo) : null
 	if (!referenceRepo) {
