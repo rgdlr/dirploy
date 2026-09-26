@@ -36,7 +36,7 @@ export const VERSION = getPackageVersion()
 export const HELP_TEXT = `Usage: dirploy [options] [source]
        dirploy init [options]
 
-Publish static build artifacts to isolated directories in your GitHub User Site.
+Publish static build artifacts from any private or public GitHub repository into an isolated directory of your github.io user site.
 
 Commands:
   init                       Create a dirploy.config.json configuration file

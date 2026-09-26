@@ -1,6 +1,6 @@
 # Dirploy
 
-Publish static builds from private repositories to isolated paths in your GitHub User Site.
+Publish static build artifacts from any private or public GitHub repository into an isolated directory of your github.io user site.
 
 ![dirploy banner](./site/public/banner.jpg)
 
