@@ -231,3 +231,99 @@ dirploy doctor [options]
 - [ ] Format colored status output (✔ / ✖ / ⚠) in `src/cli/output.ts`.
 - [ ] Add unit tests in `test/cli/doctor.test.ts`.
 
+---
+
+## Phase 8: Landing Page Mobile Responsiveness & UX Polish (`site/`)
+
+### Goal
+Ensure the documentation and marketing website (`site/`) renders flawlessly across all mobile viewport sizes (320px to 768px), specifically fixing the header navigation crowding and the pipeline flow layout.
+
+### Identified Issues
+1. **Header Navigation Crowding**: On viewports under 640px, the 3 anchor links (`#how-it-works`, `#features`, `#quickstart`) crowd against the brand logo and the GitHub button, causing layout wrapping or horizontal overflow.
+2. **"How It Works" Pipeline Alignment**: In mobile view, cards and arrows wrap unevenly. The arrow indicator (`➔`) rotates 90deg but lacks centered vertical alignment and consistent margins, leaving cards mismatched.
+3. **Hero & Command Snippet Scaling**: On small screens (< 400px), the `npx dirploy ./dist` box and copy button can feel cramped; typography scale needs responsive reduction.
+4. **Code Tabs Horizontal Overflow**: The configuration tab buttons in Quick Start can overflow narrow screens if not set to horizontally scrollable.
+
+### Implementation Checklist
+- [ ] **Header (`.site-header`, `.nav-links`)**:
+  - Add media query `< 640px` to hide anchor links (`nav-links a:not(.btn-nav) { display: none; }`) while preserving the compact GitHub action button, or introduce a lightweight CSS-only mobile drawer.
+  - Ensure `.brand` and `.btn-nav` maintain clean spacing and do not wrap on screens down to 320px.
+- [ ] **"How It Works" Section (`.pipeline-flow`, `.pipeline-card`, `.pipeline-arrow`)**:
+  - Under `< 768px`, enforce `.pipeline-flow { flex-direction: column; align-items: stretch; gap: 0.75rem; }`.
+  - Set `.pipeline-card { width: 100%; max-width: 100%; min-width: 0; }` so cards fill the container naturally without horizontal overflow.
+  - Center vertical flow arrows (`text-align: center; margin: 0.5rem auto; transform: rotate(90deg);`).
+- [ ] **Hero Section (`.hero-title`, `.command-box`)**:
+  - Adjust `.hero-title` to `clamp(1.85rem, 6vw, 2.5rem)` on screens `< 480px`.
+  - Ensure `.command-box` uses `max-width: 100%; word-break: break-all;` and adjust internal padding on narrow devices.
+- [ ] **Quick Start Tabs (`.tab-nav`, `.tab-content pre`)**:
+  - Set `.tab-nav { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }` to enable smooth finger-swiping between tabs without line wrapping.
+  - Verify all code blocks (`pre`) have `overflow-x: auto` with clean scrollbars.
+- [ ] **Build & Visual Verification**:
+  - Verify build with `npm run site:build`.
+  - Test responsive layout across 320px (iPhone SE), 375px, 414px, and 768px viewports.
+
+---
+
+## Phase 9: README Visual Polish, Status Badges & Documentation Enhancements
+
+### Goal
+Elevate the open-source presentation of `README.md` to professional industry standards with live Shields.io status badges, a feature comparison table, structured navigation, and GitHub alert callouts.
+
+### Desired Elements
+1. **Status Badges Bar** (placed right beneath the main title):
+   - **npm Version**: `https://img.shields.io/npm/v/dirploy.svg?color=a78bfa&label=npm` (linking to npmjs.com/package/dirploy)
+   - **npm Downloads**: `https://img.shields.io/npm/dm/dirploy.svg?color=6366f1`
+   - **CI Status**: `https://github.com/rgdlr/dirploy/actions/workflows/ci.yml/badge.svg`
+   - **Zero Dependencies**: `https://img.shields.io/badge/dependencies-0-success.svg?color=10b981`
+   - **License**: `https://img.shields.io/badge/license-MIT-blue.svg`
+   - **Node.js Compatibility**: `https://img.shields.io/node/v/dirploy.svg`
+2. **Feature Comparison Table ("Why Dirploy?")**:
+   - Compare `dirploy` against the traditional `gh-pages` npm package and GitHub Pages native branch deploy across key capabilities:
+     - Multi-project isolation on a single domain.
+     - Publishing from private repositories to public User Sites without paying for GitHub Pro.
+     - Zero runtime dependencies (`0` vs `10+` external dependencies).
+     - Subpath asset broken-link warnings.
+3. **Table of Contents (TOC)**:
+   - Provide clickable anchor links at the top of the README for easy navigation through all sections (Quick Start, Features, Configuration, CI/CD, FAQ).
+4. **Enhanced GitHub Alert Callouts**:
+   - Format crucial tips using `> [!TIP]` (for dogfooding and performance tips) and `> [!IMPORTANT]` (for `DIRPLOY_TOKEN` permission setup).
+
+### Implementation Checklist
+- [ ] Add Shields.io badge row at the top of `README.md` directly below the `# Dirploy` header.
+- [ ] Add a clean Table of Contents with markdown anchor links.
+- [ ] Add the "Why Dirploy? (Comparison)" section with a markdown table comparing alternatives.
+- [ ] Modernize important notes into GitHub Alert syntax (`> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`).
+- [ ] Verify that all badge links, image references, and documentation links resolve cleanly.
+
+---
+
+## Phase 10: AI Agent Ecosystem Integration (Agent Skill & MCP Server)
+
+### Goal
+Empower AI coding assistants (such as Google Antigravity, Claude Code, Cursor, Windsurf, and VS Code Copilot) to autonomously deploy static applications, diagnose path issues, and generate CI workflows on behalf of the developer.
+
+### Proposed Integrations
+
+#### 1. Dirploy Agent Skill (`skills/dirploy/SKILL.md`)
+A lightweight, declarative skill definition teaching AI agents:
+- How to detect project build systems (Vite, Astro, Next.js static export, SvelteKit, Hugo, pure HTML).
+- How to verify and adjust the framework base path (e.g. `base: './'` or `base: '/my-project/'`) before building to avoid broken asset paths on subpaths.
+- How to execute `npx dirploy` with dry-run verification first.
+- How to configure `.github/workflows/deploy.yml` and explain the `DIRPLOY_TOKEN` secret to the user.
+
+#### 2. Model Context Protocol (MCP) Server (`dirploy mcp` or `@dirploy/mcp-server`)
+A standard Model Context Protocol (JSON-RPC over stdio) server exposing native tools to AI agents:
+- `dirploy_deploy`: Deploy a directory to GitHub Pages with parameter schema (`source`, `destinationPath`, `repository`, `branch`, `dryRun`).
+- `dirploy_validate_assets`: Scan an HTML/CSS build output directory to report any absolute links that will fail when served under a subpath.
+- `dirploy_generate_config`: Interactively generate a `dirploy.config.json` based on the agent's inspection of the current workspace.
+
+### Implementation Checklist
+- [ ] Create `skills/dirploy/SKILL.md` with YAML frontmatter (`name: dirploy`, `description: "Deploy static projects to isolated GitHub Pages subpaths with zero friction"`).
+- [ ] Document framework base path rules in `skills/dirploy/references/frameworks.md` (Vite, Astro, Next.js, SvelteKit).
+- [ ] Implement `dirploy mcp` subcommand in CLI or as a companion package (`@dirploy/mcp-server`).
+- [ ] Expose MCP tools: `deploy`, `validate_assets`, `inspect_config`.
+- [ ] Document MCP installation in `README.md` for Claude Desktop, Antigravity (`mcp_config.json`), and Cursor.
+
+
+
+
