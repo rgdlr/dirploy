@@ -18,10 +18,15 @@ npm install
 
 ## Available Scripts
 
-- `npm test`: Runs the test suite using Vitest (includes local git integration tests; requires no GitHub token or network access).
+- `npm test`: Runs the test suite using Vitest (includes local git integration tests).
 - `npm run build`: Compiles TypeScript to `./dist`.
 - `npm run typecheck`: Validates TypeScript types with `tsc --noEmit`.
-- `npm run deploy:site`: Builds and deploys the landing page in `site/` to your GitHub Pages site under the `dirploy` path.
+- `npm run lint`: Checks formatting and linting with Biome.
+- `npm run format`: Automatically formats codebase using Biome.
+- `npm run check:package`: Validates package exports and types using Publint and ATTW.
+- `npm run site:build`: Builds the landing page in `site/`.
+- `npm run site:deploy`: Builds and deploys the landing page to GitHub Pages using dirploy.
+- `npm run changeset`: Generates a changeset file to document version bumps and changelog notes.
 
 ## Core Architectural Invariants
 
@@ -35,7 +40,15 @@ When submitting PRs or modifying the codebase, the following invariants **must n
 
 ## Submitting a Pull Request
 
-1. Create a feature branch: `git checkout -b feature/my-feature`.
-2. Ensure all tests pass: `npm run typecheck && npm test`.
-3. Keep changes minimal and focused on a single responsibility.
-4. Open a Pull Request with a clear description of the problem and your solution.
+1. Create a feature branch: `git checkout -b feat/my-feature`.
+2. Follow [Conventional Commits](https://www.conventionalcommits.org/) (e.g. `feat:`, `fix:`, `docs:`, `chore:`).
+3. Ensure all tests and linters pass:
+   ```bash
+   npm run lint && npm run typecheck && npm test && npm run check:package
+   ```
+4. If your PR introduces user-facing changes (new features, bug fixes, breaking changes), generate a changeset:
+   ```bash
+   npm run changeset
+   ```
+   Follow the prompts to select the appropriate bump (`patch`, `minor`, `major`) and enter a summary for the changelog. Internal refactors and documentation PRs do not require a changeset.
+5. Open a Pull Request with a clear description of the problem and your solution.
