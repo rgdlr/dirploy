@@ -160,7 +160,7 @@ export async function createDeploymentPlan(
 	}
 
 	const branch = options.branch || 'main'
-	const commitMessage = options.commitMessage || `Deploy ${normalizedPath}`
+	const commitMessage = options.commitMessage || `chore: deploy ${normalizedPath}`
 	const dryRun = Boolean(options.dryRun)
 	const customDomain = options.domain || options.cname
 	const siteUrl = buildSiteUrl(owner, normalizedPath, customDomain)
