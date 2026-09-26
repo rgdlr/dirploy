@@ -182,3 +182,52 @@ In subpath deployments, copying `index.html` as `404.html` inside the subpath wo
 - [ ] Add `spa?: boolean` to `DeploymentOptions` and `dirploy.config.json` schema.
 - [ ] In `SafeDirectorySynchronizer`, if `spa: true` and `index.html` exists in destination, copy `index.html` to `404.html` if no custom `404.html` was provided.
 - [ ] Add tests in `test/deployment/features.test.ts`.
+
+---
+
+## Phase 6: Contributor Experience & CI Hardening
+
+### Goal
+Prevent contributor confusion, catch environment-specific regressions early, and enforce quality standards before PRs are merged.
+
+### Implementation Checklist
+- [ ] Create `.github/PULL_REQUEST_TEMPLATE.md` with checklist:
+  - Verification of zero runtime dependencies.
+  - Conventional Commits format adherence.
+  - Test suites passing (`npm test`, `npm run typecheck`, `npm run lint`).
+  - Changeset inclusion (`npm run changeset`) for user-facing changes.
+- [ ] Implement Node.js Matrix in `.github/workflows/ci.yml`:
+  - Run verification jobs across `[20, 22]` to ensure full compliance with `"engines": { "node": ">=20.0.0" }`.
+- [ ] Document installing `@changesets/bot` GitHub App to automatically comment on pull requests missing a changeset.
+- [ ] Add `npm audit --omit=dev` step in CI to guard against compromised devDependencies.
+
+---
+
+## Phase 7: Diagnostic Command (`dirploy doctor`)
+
+### Goal
+Provide a single command to diagnose authentication, network, and configuration issues, eliminating troubleshooting friction for both users and contributors.
+
+### CLI Syntax
+```bash
+dirploy doctor [options]
+```
+
+### Checks Performed
+1. **Git Runtime**: Verifies Git is installed (`git --version`) and accessible in PATH.
+2. **Authentication Detection**:
+   - Checks presence of `DIRPLOY_TOKEN` or `GITHUB_TOKEN`.
+   - Checks presence of SSH keys (`~/.ssh/id_*`) and running SSH agent (`SSH_AUTH_SOCK`).
+3. **Target Repository Reachability**:
+   - Tests `git ls-remote` against the resolved target repository via the active protocol.
+4. **Local Configuration**:
+   - Validates `dirploy.config.json` against `schema.json` if present.
+5. **Asset Warnings**:
+   - Scans `./dist` or configured source directory for absolute asset references (`/assets/...`) that would break on subpaths.
+
+### Implementation Checklist
+- [ ] Register `doctor` command in `src/cli/command.ts`.
+- [ ] Implement diagnostic checks in `src/cli/doctor.ts`.
+- [ ] Format colored status output (✔ / ✖ / ⚠) in `src/cli/output.ts`.
+- [ ] Add unit tests in `test/cli/doctor.test.ts`.
+
