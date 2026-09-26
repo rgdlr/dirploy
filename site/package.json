@@ -1,0 +1,15 @@
+{
+	"name": "dirploy-site",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview",
+		"deploy": "vite build && node ../dist/cli/command.js dist --path dirploy --branch master"
+	},
+	"devDependencies": {
+		"vite": "^8.3.1"
+	}
+}

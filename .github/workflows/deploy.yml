@@ -1,0 +1,52 @@
+name: deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-site
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Dogfood Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci && npm --prefix site ci
+
+      - name: Build dirploy CLI
+        run: npm run build
+
+      - name: Configure Git identity
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Deploy site using dirploy
+        if: env.DIRPLOY_TOKEN != ''
+        run: npm run site:deploy
+        env:
+          DIRPLOY_TOKEN: ${{ secrets.DIRPLOY_TOKEN }}
+
+      - name: Report missing DIRPLOY_TOKEN
+        if: env.DIRPLOY_TOKEN == ''
+        run: echo "::notice ::DIRPLOY_TOKEN secret is not set. Skipping dogfood deployment."
+        env:
+          DIRPLOY_TOKEN: ${{ secrets.DIRPLOY_TOKEN }}

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Dirploy — Publish static builds to GitHub Pages with zero friction</title>
+	<meta name="description" content="Publish static build artifacts from any GitHub repository into an isolated directory of your GitHub User Site. Zero dependencies, pure Git, safe synchronization.">
+
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="Dirploy — Publish static builds to GitHub Pages with zero friction">
+	<meta property="og:description" content="Publish static build artifacts into isolated subdirectories of your GitHub User Site. Zero dependencies, pure Git, safe synchronization.">
+	<meta property="og:image" content="./banner.jpg">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:title" content="Dirploy — Publish static builds to GitHub Pages with zero friction">
+	<meta name="twitter:description" content="Publish static build artifacts into isolated subdirectories of your GitHub User Site. Zero dependencies, pure Git, safe synchronization.">
+	<meta name="twitter:image" content="./banner.jpg">
+
+	<link rel="icon" type="image/jpeg" href="./favicon.jpg">
+</head>
+<body>
+	<header class="site-header">
+		<div class="container header-inner">
+			<div class="brand">
+				<img src="./favicon.jpg" alt="Dirploy logo" class="brand-logo" width="32" height="32">
+				<span class="brand-name">Dirploy</span>
+			</div>
+			<nav class="nav-links">
+				<a href="#how-it-works">How It Works</a>
+				<a href="#features">Features</a>
+				<a href="#quickstart">Quick Start</a>
+				<a href="https://github.com/rgdlr/dirploy" target="_blank" rel="noopener noreferrer" class="btn-nav">
+					<svg class="github-icon" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+						<title>GitHub logo</title>
+						<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+					</svg>
+					GitHub
+				</a>
+			</nav>
+		</div>
+	</header>
+
+	<section class="hero">
+		<div class="container hero-inner">
+			<div class="badge">
+				<span class="badge-dot"></span>
+				v0.1.0 • Zero Dependencies • Pure Git
+			</div>
+			<h1 class="hero-title">Publish static builds to isolated subpaths of your GitHub Pages.</h1>
+			<p class="hero-subtitle">
+				Keep your source projects private. Host static demos, dashboards, and client apps cleanly under
+				<code>username.github.io/my-project</code> with a single command. Never overwrite sibling projects.
+			</p>
+
+			<div class="command-box">
+				<div class="command-content">
+					<span class="prompt">$</span>
+					<code id="install-cmd">npx dirploy ./dist</code>
+				</div>
+				<button id="copy-btn" class="copy-btn" type="button" title="Copy command">
+					<svg class="copy-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2">
+						<title>Copy to clipboard icon</title>
+						<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+						<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+					</svg>
+					<span class="copy-text">Copy</span>
+				</button>
+			</div>
+
+			<div class="hero-actions">
+				<a href="#quickstart" class="btn btn-primary">Get Started</a>
+				<a href="#how-it-works" class="btn btn-secondary">See How It Works</a>
+			</div>
+
+			<div class="banner-wrapper">
+				<img src="./banner.jpg" alt="Dirploy preview banner" class="hero-banner" width="1280" height="640">
+			</div>
+		</div>
+	</section>
+
+	<section id="how-it-works" class="pipeline-section">
+		<div class="container">
+			<div class="section-header">
+				<h2>How It Works</h2>
+				<p>A deterministic, 100% Git-native synchronization pipeline.</p>
+			</div>
+
+			<div class="pipeline-flow">
+				<div class="pipeline-card">
+					<div class="card-step">1. Source</div>
+					<div class="card-icon">📁</div>
+					<h3>Private Project</h3>
+					<p>Your local build output:</p>
+					<pre><code>dist/
+├── index.html
+└── assets/</code></pre>
+				</div>
+
+				<div class="pipeline-arrow">➔</div>
+
+				<div class="pipeline-card highlight">
+					<div class="card-step">2. Dirploy Engine</div>
+					<div class="card-icon">⚙️</div>
+					<h3>Isolated Synchronization</h3>
+					<p>Clones temporary repo, wipes only target directory, applies atomic commit & push:</p>
+					<pre><code>Safe sync:
+app-a/ (untouched)
+my-project/ ➔ (updated)
+app-c/ (untouched)</code></pre>
+				</div>
+
+				<div class="pipeline-arrow">➔</div>
+
+				<div class="pipeline-card">
+					<div class="card-step">3. Live Site</div>
+					<div class="card-icon">🌐</div>
+					<h3>GitHub Pages</h3>
+					<p>Live instantly at:</p>
+					<pre><code>https://username.github.io/
+└── my-project/</code></pre>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="demo-section">
+		<div class="container">
+			<div class="terminal-window">
+				<div class="terminal-bar">
+					<span class="dot dot-red"></span>
+					<span class="dot dot-yellow"></span>
+					<span class="dot dot-green"></span>
+					<span class="terminal-title">bash — dirploy ./dist</span>
+				</div>
+				<div class="terminal-body">
+					<div class="term-line"><span class="term-prompt">$</span> npx dirploy ./dist</div>
+					<div class="term-line term-bold">Dirploy</div>
+					<div class="term-line">Source:      ./dist</div>
+					<div class="term-line">Repository:  rgdlr/rgdlr.github.io</div>
+					<div class="term-line">Branch:      main</div>
+					<div class="term-line">Destination: dirploy</div>
+					<div class="term-line term-dim">Synchronizing files...</div>
+					<div class="term-line term-dim">Creating commit...</div>
+					<div class="term-line term-dim">Pushing changes...</div>
+					<div class="term-line term-success">Published successfully.</div>
+					<div class="term-line"><br>URL:</div>
+					<div class="term-line term-url">https://rgdlr.github.io/dirploy/</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section id="features" class="features-section">
+		<div class="container">
+			<div class="section-header">
+				<h2>Built for Safety and Simplicity</h2>
+				<p>Designed around strict invariants to protect your public user site.</p>
+			</div>
+
+			<div class="features-grid">
+				<div class="feature-item">
+					<div class="feature-icon">🛡️</div>
+					<h3>Subdirectory Isolation</h3>
+					<p>Each deployment owns strictly its destination folder. Sibling projects and root files are never touched.</p>
+				</div>
+
+				<div class="feature-item">
+					<div class="feature-icon">⚡</div>
+					<h3>Zero Runtime Dependencies</h3>
+					<p>Zero third-party packages in production. Built entirely on standard Node.js APIs for instant <code>npx</code> execution.</p>
+				</div>
+
+				<div class="feature-item">
+					<div class="feature-icon">🔒</div>
+					<h3>Private Source, Public Output</h3>
+					<p>Keep your source code private while publishing compiled artifacts publicly without giving access to the source repository.</p>
+				</div>
+
+				<div class="feature-item">
+					<div class="feature-icon">⚡</div>
+					<h3>Local Cache & Parent Detection</h3>
+					<p>Clones using existing local user site repos as reference when present, minimizing network transfers and clone time.</p>
+				</div>
+
+				<div class="feature-item">
+					<div class="feature-icon">🌐</div>
+					<h3>Custom Domain & CNAME</h3>
+					<p>Seamlessly detects or provisions custom CNAME records and disables Jekyll builds via automatic <code>.nojekyll</code>.</p>
+				</div>
+
+				<div class="feature-item">
+					<div class="feature-icon">🔄</div>
+					<h3>Push Retry & Conflict Resilience</h3>
+					<p>Safely retries on non-fast-forward rejections with backoff without performing destructive force-pushes.</p>
+				</div>
+
+				<div class="feature-item">
+					<div class="feature-icon">🚫</div>
+					<h3>Path Traversal Protection</h3>
+					<p>Rejects directory escapes (<code>../</code>) and repo root overwrites before any filesystem mutation occurs.</p>
+				</div>
+
+				<div class="feature-item">
+					<div class="feature-icon">👁️</div>
+					<h3>Dry Run Previews</h3>
+					<p>Inspect exact file counts (added, updated, removed) with <code>--dry-run</code> without committing or pushing anything.</p>
+				</div>
+
+				<div class="feature-item">
+					<div class="feature-icon">🔍</div>
+					<h3>Subpath Base URL Check</h3>
+					<p>Inspects your build for broken root-relative asset URLs and warns you before broken links hit production.</p>
+				</div>
+
+				<div class="feature-item">
+					<div class="feature-icon">⚙️</div>
+					<h3>Config Wizard (`dirploy init`)</h3>
+					<p>Bootstrap your project setup in seconds with interactive or flag-based configuration generation.</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section id="quickstart" class="quickstart-section">
+		<div class="container">
+			<div class="section-header">
+				<h2>Quick Start</h2>
+				<p>Publish manually, configure project defaults, or automate via GitHub Actions.</p>
+			</div>
+
+			<div class="tabs-container">
+				<div class="tabs-header">
+					<button class="tab-btn active" type="button" data-tab="cli">CLI Usage</button>
+					<button class="tab-btn" type="button" data-tab="config">Configuration</button>
+					<button class="tab-btn" type="button" data-tab="ci">GitHub Actions CI</button>
+					<button class="tab-btn" type="button" data-tab="bundler">Bundler Base Setup</button>
+					<button class="tab-btn" type="button" data-tab="api">TypeScript API</button>
+				</div>
+
+				<div class="tab-content active" id="tab-cli">
+					<pre><code># Bootstrap configuration file:
+npx dirploy init
+
+# Publish ./dist to https://&lt;owner&gt;.github.io/&lt;project&gt;/
+npx dirploy ./dist
+
+# Publish to a custom subpath:
+npx dirploy ./dist --path my-project
+
+# Preview changes safely without pushing:
+npx dirploy ./dist --dry-run</code></pre>
+				</div>
+
+				<div class="tab-content" id="tab-config">
+					<p class="tab-desc">Run <code>npx dirploy init</code> or create <code>dirploy.config.json</code> in your project root:</p>
+					<pre><code>{
+	"$schema": "https://raw.githubusercontent.com/rgdlr/dirploy/main/schema.json",
+	"source": "dist",
+	"path": "my-project",
+	"branch": "main",
+	"clean": true,
+	"nojekyll": true
+}</code></pre>
+				</div>
+
+				<div class="tab-content" id="tab-ci">
+					<p class="tab-desc">Deploy automatically on push to <code>main</code> in GitHub Actions:</p>
+					<pre><code>name: Deploy
+on:
+	push:
+		branches: [main]
+
+permissions:
+	contents: write
+
+jobs:
+	deploy:
+		runs-on: ubuntu-latest
+		steps:
+			- uses: actions/checkout@v4
+			- uses: actions/setup-node@v4
+				with:
+					node-version: 22
+			- run: npm ci
+			- run: npm run build
+			- run: npx dirploy ./dist
+				env:
+					GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+					# For cross-repo deployments: DIRPLOY_TOKEN: ${{ secrets.DIRPLOY_TOKEN }}</code></pre>
+				</div>
+
+				<div class="tab-content" id="tab-bundler">
+					<p class="tab-desc">Configure your bundler base URL so assets load properly under subdirectories:</p>
+					<pre><code>vite.config.ts:
+export default defineConfig({
+	base: './',
+})
+
+astro.config.mjs:
+export default defineConfig({
+	base: '/my-project/',
+})
+
+next.config.js:
+module.exports = {
+	output: 'export',
+	basePath: '/my-project',
+}</code></pre>
+				</div>
+
+				<div class="tab-content" id="tab-api">
+					<p class="tab-desc">Use Dirploy programmatically in your build scripts or tools:</p>
+					<pre><code>import { deploy } from 'dirploy'
+
+const result = await deploy({
+	sourceDirectory: './dist',
+	repository: 'username/username.github.io',
+	branch: 'main',
+	destinationPath: 'my-project',
+	dryRun: false,
+})
+
+console.log(`Published at: ${result.url}`)</code></pre>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<footer class="site-footer">
+		<div class="container footer-inner">
+			<div class="footer-left">
+				<img src="./favicon.jpg" alt="Dirploy logo" class="brand-logo" width="24" height="24">
+				<span><strong>Dirploy</strong> — Released under the MIT License.</span>
+			</div>
+			<div class="footer-right">
+				<a href="https://github.com/rgdlr/dirploy" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
+			</div>
+		</div>
+	</footer>
+
+	<script type="module" src="./src/main.js"></script>
+</body>
+</html>

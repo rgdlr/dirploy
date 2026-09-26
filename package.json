@@ -1,0 +1,73 @@
+{
+	"name": "dirploy",
+	"version": "0.1.0",
+	"description": "Publish static build artifacts from any GitHub repository into an isolated directory of your GitHub User Site.",
+	"keywords": [
+		"dirploy",
+		"github",
+		"github-pages",
+		"static-site",
+		"deploy",
+		"publisher",
+		"isolated-deploy",
+		"cli"
+	],
+	"homepage": "https://rgdlr.github.io/dirploy",
+	"bugs": {
+		"url": "https://github.com/rgdlr/dirploy/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/rgdlr/dirploy.git"
+	},
+	"license": "MIT",
+	"author": "rgdlr <rodrigr12@hotmail.com>",
+	"type": "module",
+	"publishConfig": {
+		"access": "public"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"bin": {
+		"dirploy": "./dist/cli/command.js"
+	},
+	"files": [
+		"dist"
+	],
+	"engines": {
+		"node": ">=20.0.0"
+	},
+	"scripts": {
+		"build": "node -e \"fs.rmSync('dist', { recursive: true, force: true })\" && tsc",
+		"typecheck": "tsc --noEmit",
+		"lint": "biome check .",
+		"format": "biome format --write .",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"check:package": "publint && attw --pack . --ignore-rules cjs-resolves-to-esm",
+		"site:build": "npm run --prefix site build",
+		"site:deploy": "npm run build && npm run --prefix site deploy",
+		"changeset": "changeset",
+		"prepublishOnly": "npm run build && npm run check:package",
+		"prepare": "husky"
+	},
+	"devDependencies": {
+		"@arethetypeswrong/cli": "^0.18.5",
+		"@biomejs/biome": "^2.5.14",
+		"@changesets/cli": "^3.0.3",
+		"@commitlint/cli": "^21.2.3",
+		"@commitlint/config-conventional": "^21.2.3",
+		"@types/node": "^26.6.2",
+		"husky": "^9.1.7",
+		"lint-staged": "^17.5.1",
+		"publint": "^0.3.24",
+		"typescript": "^7.0.2",
+		"vitest": "^5.0.2"
+	}
+}
