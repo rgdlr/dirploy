@@ -1,7 +1,7 @@
 {
 	"name": "dirploy",
 	"version": "0.1.1",
-	"description": "Publish static build artifacts from any private or public GitHub repository into an isolated directory of your github.io user site.",
+	"description": "Publish static build artifacts from any private or public GitHub repository into an isolated directory of your github.io user site",
 	"keywords": [
 		"dirploy",
 		"github",
