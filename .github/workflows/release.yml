@@ -55,10 +55,10 @@ jobs:
         id: changesets
         uses: changesets/action@v2
         with:
-          title: 'chore(release): version packages'
-          commit: 'chore(release): version packages'
-          publish: npx changeset publish
-          createGithubReleases: true
+          pr-title: 'chore(release): version packages'
+          commit-message: 'chore(release): version packages'
+          publish-script: npx changeset publish
+          create-github-releases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

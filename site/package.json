@@ -7,7 +7,7 @@
 		"dev": "vite",
 		"build": "vite build",
 		"preview": "vite preview",
-		"deploy": "vite build && node ../dist/cli/command.js dist --path dirploy --branch master"
+		"deploy": "vite build && node ../dist/cli/command.js dist --path dirploy"
 	},
 	"devDependencies": {
 		"vite": "^8.3.1"
